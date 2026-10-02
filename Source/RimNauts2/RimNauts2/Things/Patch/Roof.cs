@@ -20,33 +20,22 @@ namespace RimNauts2.Things.Patch {
     // RimWorld.CompTransporter::CompGetGizmosExtra al seleccionar un pod del mod, siempre en el
     // mismo punto (IL 0x00569). Ese metodo es vanilla, asi que el nulo depende del estado del
     // edificio. Esta sonda lo escribe ANTES de que reviente. Escribe una sola vez por sesion.
-    [HarmonyPatch(typeof(RimWorld.CompTransporter), "CompGetGizmosExtra")]
-    class CompTransporter_CompGetGizmosExtra {
-        private static bool __sonda_hecha = false;
-
-        public static void Prefix(RimWorld.CompTransporter __instance) {
-            if (__sonda_hecha) return;
-            __sonda_hecha = true;
-            try {
-                ThingWithComps p = __instance == null ? null : __instance.parent as ThingWithComps;
-                RimWorld.CompLaunchable lanz = p == null ? null : p.GetComp<RimWorld.CompLaunchable>();
-                string def = (p == null || p.def == null) ? "NULO" : p.def.defName;
-                string grupo = "sin lanzador";
-                if (lanz != null) {
-                    List<RimWorld.CompTransporter> g = MirrorVanilla.TransportersInGroup(lanz);
-                    grupo = g == null ? "NULO" : g.Count.ToString();
-                }
-                string linea = "[RimNauts2 PORT 1.6] Pod: def=" + def
-                    + " | spawned=" + (p != null && p.Spawned)
-                    + " | map=" + (p != null && p.Map != null)
-                    + " | launchable=" + (lanz != null)
-                    + " | props=" + (lanz != null && lanz.Props != null)
-                    + " | compsDef=" + (p == null || p.def == null || p.def.comps == null ? "NULO" : p.def.comps.Count.ToString())
-                    + " | compsEdificio=" + (p == null ? "NULO" : p.AllComps.Count.ToString())
-                    + " | grupo=" + grupo
-                    + " | cosasDentro=" + (__instance != null && __instance.innerContainer != null ? __instance.innerContainer.Count.ToString() : "NULO");
-                Verse.Log.Message(linea);
-            } catch (System.Exception e) { Verse.Log.Message("[RimNauts2 PORT 1.6] Fallo la sonda del pod: " + e.Message); }
+    // PORT 1.6: ARREGLO del error rojo al seleccionar un pod del mod.
+    //
+    // El diagnostico midio el estado del pod y dio todo correcto salvo una cosa:
+    //   grupo=NULO   (MirrorVanilla.TransportersInGroup devolvia nulo)
+    // y esa lista es exactamente lo que RimWorld.CompTransporter::CompGetGizmosExtra
+    // recorre para dibujar los botones del pod. Vanilla la usa sin comprobar nada, asi que
+    // lanzaba NullReferenceException SIEMPRE en el mismo punto (IL 0x00569).
+    //
+    // No falta ningun componente: la propiedad del juego devuelve nulo para este edificio y
+    // nadie lo comprueba. Este posfijo garantiza que nunca sea nulo: una lista vacia se recorre
+    // sin problema y el pod simplemente no muestra botones de grupo, que es lo correcto cuando
+    // no tiene grupo.
+    [HarmonyPatch(typeof(RimWorld.CompLaunchable), "TransportersInGroup", MethodType.Getter)]
+    class CompLaunchable_TransportersInGroup {
+        public static void Postfix(ref List<RimWorld.CompTransporter> __result) {
+            if (__result == null) __result = new List<RimWorld.CompTransporter>();
         }
     }
 
