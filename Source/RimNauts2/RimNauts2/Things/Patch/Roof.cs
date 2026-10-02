@@ -39,6 +39,27 @@ namespace RimNauts2.Things.Patch {
         }
     }
 
+    // PORT 1.6: el NullReferenceException de CompTransporter::CompGetGizmosExtra sigue saliendo
+    // aunque la lista del grupo ya no puede ser nula, asi que el nulo es otra cosa. Cinco
+    // hipotesis deducidas han fallado; esta vez el error lo escribe el propio juego.
+    //
+    // El metodo que falla es un iterador compilado, y por eso el registro del juego pierde
+    // sus tramas internas (van inline). Un finalizador SI recibe el objeto de la excepcion,
+    // cuyo ToString() lleva la trama mas interna: la que nombra al culpable.
+    // Devuelve la excepcion para no cambiar el comportamiento del juego.
+    [HarmonyPatch(typeof(RimWorld.CompTransporter), "CompGetGizmosExtra")]
+    class CompTransporter_CompGetGizmosExtra_Diagnostico {
+        private static bool __ya_escrito = false;
+
+        public static System.Exception Finalizer(System.Exception __exception) {
+            if (__exception != null && !__ya_escrito) {
+                __ya_escrito = true;
+                Verse.Log.Error("[RimNauts2 PORT 1.6] ERROR DEL POD, completo: " + __exception.ToString());
+            }
+            return __exception;
+        }
+    }
+
     [HarmonyPatch(typeof(RimWorld.PlaceWorker_NotUnderRoof), "AllowsPlacing")]
     class PlaceWorker_NotUnderRoof_AllowsPlacing {
         public static bool Prefix(ref AcceptanceReport __result, BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore, Thing thing) {
