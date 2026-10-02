@@ -11,6 +11,26 @@ namespace RimNauts2.Things.Patch {
             __result = Color.blue;
             return false;
         }
+
+    // PORT 1.6: el juego revienta con NullReferenceException DENTRO de
+    // RimWorld.CompTransporter::CompGetGizmosExtra al seleccionar un pod del mod, siempre en el
+    // mismo punto. Ese metodo es vanilla, asi que el nulo depende del estado del edificio. Este
+    // prefijo escribe ese estado ANTES de que reviente, para saber que falta exactamente.
+    [HarmonyPatch(typeof(RimWorld.CompTransporter), "CompGetGizmosExtra")]
+    class CompTransporter_CompGetGizmosExtra {
+        public static void Prefix(RimWorld.CompTransporter __instance) {
+            try {
+                ThingWithComps p = __instance == null ? null : __instance.parent as ThingWithComps;
+                Verse.Log.Message("[RimNauts2 PORT 1.6] Pod seleccionado: def=" + (p == null || p.def == null ? "NULO" : p.def.defName)
+                    + " | spawned=" + (p != null && p.Spawned)
+                    + " | map=" + (p != null && p.Map != null)
+                    + " | launchable=" + (p != null && p.GetComp<RimWorld.CompLaunchable>() != null)
+                    + " | refuelable=" + (p != null && p.GetComp<RimWorld.CompRefuelable>() != null)
+                    + " | transporter=" + (__instance != null)
+                    + " | thingsDentro=" + (__instance != null && __instance.innerContainer != null ? __instance.innerContainer.Count.ToString() : "NULO"));
+            } catch (System.Exception e) { Verse.Log.Message("[RimNauts2 PORT 1.6] Fallo el diagnostico del pod: " + e.Message); }
+        }
+    }
     }
 
     [HarmonyPatch(typeof(RimWorld.PlaceWorker_NotUnderRoof), "AllowsPlacing")]
