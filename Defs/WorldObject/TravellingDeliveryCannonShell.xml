@@ -4,7 +4,7 @@
         <defName>RimNauts2_TravellingDeliveryCannonShell</defName>
         <label>delivery cannon shell</label>
         <description>Delivery cannon shell in flight.</description>
-        <worldObjectClass>TravelingTransportPods</worldObjectClass>
+        <worldObjectClass>TravellingTransporters</worldObjectClass>
         <texture>Things/Special/RimNauts2_DeliveryCannon_Shell</texture>
         <useDynamicDrawer>true</useDynamicDrawer>
         <expandingIcon>true</expandingIcon>
