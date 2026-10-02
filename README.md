@@ -1,59 +1,104 @@
-# RimNauts 2 — Reforged (RimWorld 1.6)
+<div align="center">
 
-Port a **RimWorld 1.6** de **RimNauts 2**, el mod de Sindre Eiklid que anade asteroides,
-lunas, satelites y planetas al mapa del mundo.
+<img src="About/preview.png" alt="RimNauts 2 — Reforged" width="640">
 
-El original se quedo en 1.5. Este port lo pone a funcionar en 1.6 **junto con Universum**,
-que es su dependencia y que tiene su propio port.
+# RimNauts 2 — Reforged
 
-## Requisitos
+**Asteroids, moons, satellites and planets for the RimWorld world map — ported to 1.6.**
 
-| Mod | Por que |
+[![RimWorld](https://img.shields.io/badge/RimWorld-1.6-2f7d32?style=flat-square)](https://rimworldgame.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Requires](https://img.shields.io/badge/requires-Universum-9c27b0?style=flat-square)](https://github.com/DGZ-DEV/Universum-Reforged-)
+[![Status](https://img.shields.io/badge/status-first%20release-orange?style=flat-square)](#known-limitations)
+
+</div>
+
+---
+
+## What this is
+
+The original **RimNauts 2** stopped at RimWorld 1.5. This is a port to **1.6**, made to work
+together with **[Universum](https://github.com/DGZ-DEV/Universum-Reforged-)**, its framework
+dependency, which has its own port.
+
+It adds a ring of asteroids, moons, satellites and planets to the world map, reachable with
+transport pods built from the mod's own modules.
+
+## Requirements
+
+| Mod | Why |
 |---|---|
-| **Harmony** | Lo necesitan los dos |
-| **Universum** (port a 1.6) | Es la dependencia: sin el, RimNauts 2 no carga |
+| **[Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077)** | Both this and Universum need it |
+| **[Universum (1.6 port)](https://github.com/DGZ-DEV/Universum-Reforged-)** | Framework dependency — without it, the mod will not load |
 
-Tambien requiere los DLC de RimWorld que ya usaras normalmente.
+## Installation
 
-## Que se arreglo respecto al original de 1.5
+1. Copy `Rimnauts 2 (Reforged)` and `Universum (Reforged)` into RimWorld's `Mods` folder.
+2. Enable **Harmony**, **Universum** and **RimNauts 2** in the mod list, in that order.
+3. **Generate a new world** — the celestial objects are placed when the world is generated.
 
-- **El generador coloca sus objetos.** En 1.6, heredar de `WorldGenStep` no basta: hace falta
-  el def que registra la clase **y** que la capa lo enumere. Faltaba lo segundo, asi que el
-  generador existia y **nadie lo llamaba nunca**: el mundo se veia normal y sin asteroides,
-  sin un solo error que lo delatara.
-- **El pod del jugador ya se puede usar.** Le faltaba su componente de combustible; sin el,
-  el juego no podia evaluar si tenia carburante y la interfaz no mostraba **ningun boton**.
-- **Las texturas cargan.** El mod reparte su contenido entre la raiz y una carpeta de version,
-  y el mapa de carpetas hay que declararlo entero.
-- **Un campo de definicion** que 1.6 ya no tiene (`causesNeed`) y un aviso del relic de Ideology.
-- **Las mallas de los objetos celestes** ahora llevan coordenadas de textura, que antes no se
-  generaban: el juego se negaba a dibujarlas.
+## What the port fixed
 
-## Limitaciones conocidas
+Everything below **compiled fine in 1.5 and was broken in ways that produced no error message** —
+which is why they are worth listing:
 
-Se documentan en vez de esconderse:
+| Problem | Cause |
+|---|---|
+| **The generator never ran.** The world looked normal and had no asteroids. | In 1.6, inheriting `WorldGenStep` is not enough: the step needs its def **and** the planet layer must list it. Only the def existed. |
+| **Pods had no buttons at all.** | The pod's defensive component was missing its fuel comp, so the game could not evaluate it and the whole gizmo list was lost. |
+| **Celestial objects were invisible.** | Their meshes were built without texture coordinates, so Unity refused to render them. |
+| **Textures failed to load.** | The mod splits its content between the root folder and a version folder; the folder map has to list both. |
+| **A def field that 1.6 no longer has** (`causesNeed`) and an Ideology relic warning. | Definition cleanup. |
 
-- **El efecto de ver el planeta en el cielo** ya no se dibuja. En 1.6 la geometria que lo
-  alimentaba no existe; el framework ahora lo detecta y no intenta pintarlo, en lugar de
-  llenar el registro de avisos.
-- **Viajar a los asteroides del anillo** todavia no es posible: el lanzamiento del juego solo
-  acepta destinos que ya tengan mapa generado, y los asteroides no lo tienen. Los planetas y
-  satelites si funcionan.
-- Queda retirado, con aviso, un parche de capas del framework pendiente de reescribir.
+## Known limitations
 
-## Instalacion
+Documented rather than hidden — a port should say what it does not do:
 
-1. Copia `Rimnauts 2 (Reforged)` y `Universum (Reforged)` a la carpeta `Mods` de RimWorld.
-2. Activa **Harmony**, **Universum** y **RimNauts 2** en el menu de mods, en ese orden.
-3. Genera un mundo nuevo: los objetos se colocan al generarlo.
+<details>
+<summary><b>The planet-in-the-sky effect no longer renders</b></summary>
 
-## Creditos y licencia
 
-**RimNauts 2** es obra de **Sindre Eiklid** y se distribuye bajo **licencia MIT**, que se
-conserva en este repositorio junto a su aviso de copyright original.
+In 1.6 the geometry that fed it does not exist. The framework now detects this and stops trying,
+instead of filling the log with thousands of warnings. The map itself renders normally.
 
-**Universum**, su dependencia, es de **Rimworld: Space Project**, tambien MIT, y tiene su
-propio repositorio de port.
+</details>
 
-Este port mantiene la autoria original intacta. El `README` original del autor se conserva
-como `README.original.md`.
+<details>
+<summary><b>Travelling to the ring asteroids is not possible yet</b></summary>
+
+
+The game's launch targeting only accepts destinations that **already have a generated map**, and
+the ring asteroids do not have one. Planets and satellites work, because the pod creates them with
+a map.
+
+</details>
+
+<details>
+<summary><b>One framework patch is retired, with a warning</b></summary>
+
+
+`SectionLayer_FinalizeMesh` is disabled: the method it patched moved to a different class in 1.6,
+and its body depends on members that method no longer exposes. It needs rewriting, not repointing.
+
+</details>
+
+## Credits
+
+**RimNauts 2** was created by **Sindre Eiklid** and released under the **MIT license**, which is
+preserved in this repository together with the original copyright notice.
+
+- Original source: <https://github.com/RimNauts/RimNauts2>
+- Original Steam Workshop page: <https://steamcommunity.com/sharedfiles/filedetails/?id=2880599514>
+
+**Universum**, the framework dependency, is by **Rimworld: Space Project**, also MIT, and has its
+own port repository.
+
+This port keeps the original authorship untouched. The author's own README is preserved as
+[`README.original.md`](README.original.md).
+
+## Development notes
+
+The commit history is the documentation: every fix has a commit explaining **what was broken,
+why, and how it was found**. The first commit is the pristine original, so the whole port can be
+reviewed as a single diff.
+
