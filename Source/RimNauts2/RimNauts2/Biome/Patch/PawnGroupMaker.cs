@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
@@ -8,7 +8,7 @@ namespace RimNauts2.Biome.Patch {
         public static IEnumerable<Pawn> Postfix(IEnumerable<Pawn> __result, RimWorld.PawnGroupMakerParms parms, bool warnOnZeroResults) {
             if (parms.tile == -1) return __result;
 
-            RimWorld.BiomeDef biome = Find.WorldGrid[parms.tile].biome;
+            RimWorld.BiomeDef biome = WorldGridHelper.GetBiome(parms.tile);
             bool no_oxygen = Universum.Utilities.Cache.allowed_utility(biome, "universum.vacuum_suffocation");
             bool decompression = Universum.Utilities.Cache.allowed_utility(biome, "universum.vacuum_decompression");
             bool requires_spacesuit = no_oxygen || decompression;

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Verse;
 
 namespace RimNauts2 {
@@ -29,7 +29,7 @@ namespace RimNauts2 {
                 map.weatherManager.lastWeather = WeatherDef.Named(weather_def);
                 map.weatherManager.curWeather = WeatherDef.Named(weather_def);
             }
-            Find.World.grid.tiles.ElementAt(map.Tile).hilliness = hilliness;
+            WorldGridHelper.SetHilliness(map.Tile, hilliness);
         }
     }
 }

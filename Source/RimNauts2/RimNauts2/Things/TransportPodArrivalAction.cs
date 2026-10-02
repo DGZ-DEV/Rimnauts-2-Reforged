@@ -1,10 +1,10 @@
-﻿using RimWorld;
+using RimWorld;
 using RimWorld.Planet;
 using System.Collections.Generic;
 using Verse;
 
 namespace RimNauts2.Things {
-    public class TransportPodArrivalAction : RimWorld.Planet.TransportPodsArrivalAction {
+    public class TransportPodArrivalAction : RimWorld.Planet.TransportersArrivalAction {
         public RimWorld.Planet.MapParent map_parent;
         public IntVec3 cell;
 
@@ -19,22 +19,27 @@ namespace RimNauts2.Things {
             Scribe_Values.Look(ref cell, "cell");
         }
 
-        public override RimWorld.FloatMenuAcceptanceReport StillValid(IEnumerable<IThingHolder> pods, int destinationTile) {
+        public override RimWorld.FloatMenuAcceptanceReport StillValid(IEnumerable<IThingHolder> pods, RimWorld.Planet.PlanetTile destinationTile) {
             RimWorld.FloatMenuAcceptanceReport floatMenuAcceptanceReport = base.StillValid(pods, destinationTile);
             if (!floatMenuAcceptanceReport) return floatMenuAcceptanceReport;
             if (map_parent != null && map_parent.Tile != destinationTile) return false;
             return CanLandInSpecificCell(pods, map_parent);
         }
 
-        public override void Arrived(List<RimWorld.ActiveDropPodInfo> pods, int tile) {
-            RimWorld.Planet.TransportPodsArrivalActionUtility.RemovePawnsFromWorldPawns(pods);
-            RimWorld.ActiveDropPodInfo pod = new RimWorld.ActiveDropPodInfo();
+        // PORT 1.6: la clase base tiene ahora una propiedad abstracta GeneratesMap. Esta accion
+        // aterriza en un mapa QUE YA EXISTE (CanLandInSpecificCell exige mapParent.HasMap y el
+        // skyfaller se genera en map_parent.Map), asi que NO genera mapa.
+        public override bool GeneratesMap { get { return false; } }
+
+        public override void Arrived(List<RimWorld.ActiveTransporterInfo> pods, RimWorld.Planet.PlanetTile tile) {
+            RimWorld.Planet.TransportersArrivalActionUtility.RemovePawnsFromWorldPawns(pods);
+            RimWorld.ActiveTransporterInfo pod = new RimWorld.ActiveTransporterInfo();
             for (int i = 0; i < pods.Count; i++) {
                 pod.innerContainer.TryAddRangeOrTransfer(pods[i].innerContainer, destroyLeftover: true);
             }
             pod.openDelay = 0;
             Thing activeDropPod_thing = ThingMaker.MakeThing(Defs.Loader.thing_delivery_cannon_active);
-            RimWorld.ActiveDropPod activeDropPod = (RimWorld.ActiveDropPod) activeDropPod_thing;
+            RimWorld.ActiveTransporter activeDropPod = (RimWorld.ActiveTransporter) activeDropPod_thing;
             activeDropPod.Contents = pod;
             RimWorld.SkyfallerMaker.SpawnSkyfaller(Defs.Loader.thing_delivery_cannon_incoming, activeDropPod, cell, map_parent.Map);
         }

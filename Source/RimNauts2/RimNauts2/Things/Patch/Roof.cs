@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -7,7 +7,7 @@ namespace RimNauts2.Things.Patch {
     [HarmonyPatch(typeof(RoofGrid), "GetCellExtraColor")]
     public static class RoofGrid_GetCellExtraColor {
         public static bool Prefix(ref RoofGrid __instance, ref Color __result, int index) {
-            if (__instance.roofGrid[index] != Defs.Loader.roof_magnetic_field) return true;
+            if (MirrorVanilla.roofGrid(__instance)[index] != Defs.Loader.roof_magnetic_field) return true;
             __result = Color.blue;
             return false;
         }
@@ -26,7 +26,7 @@ namespace RimNauts2.Things.Patch {
     class CompLaunchable_AnyInGroupIsUnderRoof {
         public static void Postfix(ref RimWorld.CompLaunchable __instance, ref bool __result) {
             if (!__result) return;
-            List<RimWorld.CompTransporter> transportersInGroup = __instance.TransportersInGroup;
+            List<RimWorld.CompTransporter> transportersInGroup = MirrorVanilla.TransportersInGroup(__instance);
             for (int index = 0; index < transportersInGroup.Count; ++index) {
                 if (transportersInGroup[index].parent.Position.Roofed(__instance.parent.Map) && transportersInGroup[index].parent.Position.GetRoof(__instance.parent.Map) != Defs.Loader.roof_magnetic_field) {
                     __result = true;

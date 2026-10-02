@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Verse;
 
 namespace RimNauts2.Things.Building {
@@ -44,7 +44,7 @@ namespace RimNauts2.Things.Building {
             }
         }
 
-        public override void Tick() {
+        protected override void Tick() {
             base.Tick();
             if (effect != null) {
                 effect.EffectTick((TargetInfo) this, (TargetInfo) this);
@@ -73,8 +73,8 @@ namespace RimNauts2.Things.Building {
                 things.TryAddOrTransfer(thing, thing.stackCount);
             }
 
-            RimWorld.ActiveDropPod activeDropPod = (RimWorld.ActiveDropPod) ThingMaker.MakeThing(RimWorld.ThingDefOf.ActiveDropPod);
-            activeDropPod.Contents = new RimWorld.ActiveDropPodInfo();
+            RimWorld.ActiveTransporter activeDropPod = (RimWorld.ActiveTransporter) ThingMaker.MakeThing(RimWorld.ThingDefOf.ActiveDropPod);
+            activeDropPod.Contents = new RimWorld.ActiveTransporterInfo();
             activeDropPod.Contents.innerContainer.TryAddRangeOrTransfer(things, destroyLeftover: true);
 
             RimWorld.FlyShipLeaving flyShipLeaving = (RimWorld.FlyShipLeaving) RimWorld.SkyfallerMaker.MakeSkyfaller(

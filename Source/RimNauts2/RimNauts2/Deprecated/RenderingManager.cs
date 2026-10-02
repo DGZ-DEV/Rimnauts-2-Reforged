@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Verse;
 
 namespace RimNauts2.World {
@@ -31,8 +31,8 @@ namespace RimNauts2.World {
             Scribe_Values.Look(ref type, "type");
         }
 
-        public override void Tick() {
-            if (destroyed) return;
+        protected override void Tick() {
+            if (Destroyed) return;
 
             Universum.World.Generator.UpdateTile(Tile, RimWorld.BiomeDefOf.Ocean);
 

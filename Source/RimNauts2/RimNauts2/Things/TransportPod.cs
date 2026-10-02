@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Verse;
 using System;
 using System.Collections.Generic;
@@ -94,12 +94,12 @@ namespace RimNauts2.Things {
             Map map = parent.Map;
             Verse.Building fuelingPortSource = FuelingPortSource;
             fuelingPortSource?.TryGetComp<RimWorld.CompRefuelable>().ConsumeFuel(FuelThreshold);
-            RimWorld.ActiveDropPod activeDropPod = (RimWorld.ActiveDropPod) ThingMaker.MakeThing(RimWorld.ThingDefOf.ActiveDropPod);
-            activeDropPod.Contents = new RimWorld.ActiveDropPodInfo();
+            RimWorld.ActiveTransporter activeDropPod = (RimWorld.ActiveTransporter) ThingMaker.MakeThing(RimWorld.ThingDefOf.ActiveDropPod);
+            activeDropPod.Contents = new RimWorld.ActiveTransporterInfo();
             RimWorld.FlyShipLeaving flyShipLeaving = (RimWorld.FlyShipLeaving) RimWorld.SkyfallerMaker.MakeSkyfaller(Props.skyfallerLeaving, activeDropPod);
             flyShipLeaving.groupID = 0;
             flyShipLeaving.destinationTile = map.Tile;
-            flyShipLeaving.worldObjectDef = RimWorld.WorldObjectDefOf.TravelingTransportPods;
+            flyShipLeaving.worldObjectDef = RimWorld.WorldObjectDefOf.TravellingTransporters;
             parent.Destroy(DestroyMode.Vanish);
             GenSpawn.Spawn(flyShipLeaving, parent.Position, map);
             CameraJumper.TryHideWorld();
