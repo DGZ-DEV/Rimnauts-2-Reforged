@@ -168,7 +168,7 @@
                 <tickets>1</tickets>
             </li>
         </objectGroup>
-    </Universum.Defs.ObjectGeneration>-->
+    </Universum.Defs.ObjectGeneration>
     <Universum.Defs.ObjectGeneration>
         <defName>RimNauts2_ObjectGeneration_AsteroidRing_6</defName>
         <total>706</total>
@@ -225,7 +225,7 @@
                 <tickets>1</tickets>
             </li>
         </objectGroup>
-    </Universum.Defs.ObjectGeneration>-->
+    </Universum.Defs.ObjectGeneration>
     <Universum.Defs.ObjectGeneration>
         <defName>RimNauts2_ObjectGeneration_AsteroidRing_9</defName>
         <total>529</total>
