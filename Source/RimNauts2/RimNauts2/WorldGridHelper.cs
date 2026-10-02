@@ -86,9 +86,16 @@ namespace RimNauts2 {
         public static readonly AccessTools.FieldRef<RoofGrid, RoofDef[]> roofGrid = AccessTools.FieldRefAccess<RoofGrid, RoofDef[]>("roofGrid");
 
         private static readonly System.Reflection.MethodInfo getTransportersInGroup = AccessTools.PropertyGetter(typeof(CompLaunchable), "TransportersInGroup");
+        // PORT 1.6: por si en 1.6 dejo de ser propiedad y paso a ser metodo.
+        private static readonly System.Reflection.MethodInfo methodTransportersInGroup = AccessTools.Method(typeof(CompLaunchable), "TransportersInGroup");
 
         public static List<CompTransporter> TransportersInGroup(CompLaunchable c) {
-            if (getTransportersInGroup == null) return null;
+            if (c == null) return null;
+            try {
+                if (getTransportersInGroup != null) return (List<CompTransporter>)getTransportersInGroup.Invoke(c, null);
+                if (methodTransportersInGroup != null) return (List<CompTransporter>)methodTransportersInGroup.Invoke(c, null);
+            } catch (System.Exception) { }
+            return null;
             return (List<CompTransporter>)getTransportersInGroup.Invoke(c, null);
         }
     }

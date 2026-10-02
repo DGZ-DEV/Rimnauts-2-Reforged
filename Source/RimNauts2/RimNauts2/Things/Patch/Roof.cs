@@ -26,9 +26,16 @@ namespace RimNauts2.Things.Patch {
     class CompLaunchable_AnyInGroupIsUnderRoof {
         public static void Postfix(ref RimWorld.CompLaunchable __instance, ref bool __result) {
             if (!__result) return;
+            // PORT 1.6: este postfijo no comprobaba NADA. Si la lista venia nula (que es lo que
+            // pasaba), el juego lanzaba NullReferenceException al dibujar los botones del pod, cada
+            // vez que se seleccionaba. Ahora se comprueba cada paso.
+            if (__instance == null || __instance.parent == null || __instance.parent.Map == null) return;
             List<RimWorld.CompTransporter> transportersInGroup = MirrorVanilla.TransportersInGroup(__instance);
+            if (transportersInGroup == null) return;
             for (int index = 0; index < transportersInGroup.Count; ++index) {
-                if (transportersInGroup[index].parent.Position.Roofed(__instance.parent.Map) && transportersInGroup[index].parent.Position.GetRoof(__instance.parent.Map) != Defs.Loader.roof_magnetic_field) {
+                RimWorld.CompTransporter objetivo = transportersInGroup[index];
+                if (objetivo == null || objetivo.parent == null || !objetivo.parent.Spawned) continue;
+                if (objetivo.parent.Position.Roofed(__instance.parent.Map) && objetivo.parent.Position.GetRoof(__instance.parent.Map) != Defs.Loader.roof_magnetic_field) {
                     __result = true;
                     return;
                 }
