@@ -96,6 +96,22 @@
                 <skyfallerLeaving>RimNauts2_DropPodLeaving</skyfallerLeaving>
                 <module_def>RimNauts2_Module_Satellite_CosmicSurveillance</module_def>
             </li>-->
+                    <li Class="CompProperties_Refuelable">
+                <fuelCapacity>1000.0</fuelCapacity>
+                <targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
+                <initialConfigurableTargetFuelLevel>75</initialConfigurableTargetFuelLevel>
+                <fuelFilter>
+                    <thingDefs>
+                        <li>Chemfuel</li>
+                    </thingDefs>
+                </fuelFilter>
+                <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
+                <autoRefuelPercent>1</autoRefuelPercent>
+                <showFuelGizmo>false</showFuelGizmo>
+                <drawOutOfFuelOverlay>false</drawOutOfFuelOverlay>
+                <drawFuelGaugeInMap>false</drawFuelGaugeInMap>
+                <showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+            </li>
         </comps>
         <inspectorTabs>
             <li>ITab_ContentsTransporter</li>
@@ -143,6 +159,22 @@
             </li>
             <li Class="CompProperties_Launchable">
                 <skyfallerLeaving>RimNauts2_DropPodLeaving</skyfallerLeaving>
+            </li>
+                    <li Class="CompProperties_Refuelable">
+                <fuelCapacity>1000.0</fuelCapacity>
+                <targetFuelLevelConfigurable>true</targetFuelLevelConfigurable>
+                <initialConfigurableTargetFuelLevel>75</initialConfigurableTargetFuelLevel>
+                <fuelFilter>
+                    <thingDefs>
+                        <li>Chemfuel</li>
+                    </thingDefs>
+                </fuelFilter>
+                <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
+                <autoRefuelPercent>1</autoRefuelPercent>
+                <showFuelGizmo>false</showFuelGizmo>
+                <drawOutOfFuelOverlay>false</drawOutOfFuelOverlay>
+                <drawFuelGaugeInMap>false</drawFuelGaugeInMap>
+                <showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
             </li>
         </comps>
         <inspectorTabs>
