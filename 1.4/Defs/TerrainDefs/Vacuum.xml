@@ -14,7 +14,6 @@
 		</filthAcceptanceMask>
 		<fertility>0</fertility>
 		<avoidWander>true</avoidWander>
-		<holdSnow>false</holdSnow>
 		<affordances>
 			<li>Light</li>
 			<li>Medium</li>

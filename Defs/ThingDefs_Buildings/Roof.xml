@@ -11,7 +11,6 @@
         <castEdgeShadows>true</castEdgeShadows>
         <fillPercent>0</fillPercent>
         <coversFloor>false</coversFloor>
-        <placingDraggableDimensions>2</placingDraggableDimensions>
         <tickerType>Normal</tickerType>
         <rotatable>false</rotatable>
         <selectable>true</selectable>
