@@ -96,7 +96,6 @@ namespace RimNauts2 {
                 if (methodTransportersInGroup != null) return (List<CompTransporter>)methodTransportersInGroup.Invoke(c, null);
             } catch (System.Exception) { }
             return null;
-            return (List<CompTransporter>)getTransportersInGroup.Invoke(c, null);
         }
     }
 }
