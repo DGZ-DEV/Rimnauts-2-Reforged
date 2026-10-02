@@ -26,9 +26,15 @@ namespace RimNauts2 {
         }
 
         private static System.Reflection.MemberInfo Miembro(Type tipo, string nombre) {
-            System.Reflection.FieldInfo f = tipo.GetField(nombre, Banderas);
-            if (f != null) return f;
-            return tipo.GetProperty(nombre, Banderas);
+            // PORT 1.6: los campos heredados de una clase base (biome vive en Tile, y las casillas de
+            // la superficie son SurfaceTile) NO los encuentra GetField sobre el tipo concreto.
+            for (Type t = tipo; t != null; t = t.BaseType) {
+                System.Reflection.FieldInfo f = t.GetField(nombre, Banderas | System.Reflection.BindingFlags.DeclaredOnly);
+                if (f != null) return f;
+                System.Reflection.PropertyInfo p = t.GetProperty(nombre, Banderas | System.Reflection.BindingFlags.DeclaredOnly);
+                if (p != null) return p;
+            }
+            return null;
         }
 
         private static void Avisar(Type tipo, string nombre) {
