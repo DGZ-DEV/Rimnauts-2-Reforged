@@ -1,0 +1,8 @@
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.csproj.AssemblyReference.cache
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.GeneratedMSBuildEditorConfig.editorconfig
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.csproj.CoreCompileInputs.cache
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.sourcelink.json
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Assemblies\RimNauts2.dll
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Assemblies\RimNauts2.pdb
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.dll
+C:\RimWorld\Mods\Rimnauts 2 (Reforged)\Source\RimNauts2\RimNauts2\obj\Release\RimNauts2.pdb

@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\RimWorld\\Mods\\Rimnauts 2 (Reforged)\\Source\\RimNauts2\\RimNauts2\\RimNauts2.csproj": {}
+  },
+  "projects": {
+    "C:\\RimWorld\\Mods\\Rimnauts 2 (Reforged)\\Source\\RimNauts2\\RimNauts2\\RimNauts2.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\RimWorld\\Mods\\Rimnauts 2 (Reforged)\\Source\\RimNauts2\\RimNauts2\\RimNauts2.csproj",
+        "projectName": "RimNauts2",
+        "projectPath": "C:\\RimWorld\\Mods\\Rimnauts 2 (Reforged)\\Source\\RimNauts2\\RimNauts2\\RimNauts2.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\RimWorld\\Mods\\Rimnauts 2 (Reforged)\\Source\\RimNauts2\\RimNauts2\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

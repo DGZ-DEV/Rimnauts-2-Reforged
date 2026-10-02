@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<MapGeneratorDef>
+	<!-- PORT 1.6: mismas dos propiedades que en Moons.xml y Ore.xml, para que la
+	     estacion espacial tenga el fondo del espacio que ya sabe dibujar el juego. -->
+	<renderWorld>true</renderWorld>
+	<disableMapClippers>true</disableMapClippers>
+	    <defName>RimNauts2_SpaceStation_MapGen</defName>
+		<genSteps>
+			<li>RimNauts2_GenStep_Vacuum</li>
+			<li>RimNauts2_SpaceStation_GenStep_Structure</li>
+			<li>RimNauts2_GenStep_Environment</li>
+			<li>Fog</li>
+		</genSteps>
+	</MapGeneratorDef>
+</Defs>

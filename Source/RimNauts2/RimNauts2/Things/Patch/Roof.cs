@@ -1,0 +1,129 @@
+using HarmonyLib;
+using System.Collections.Generic;
+using UnityEngine;
+using Verse;
+
+namespace RimNauts2.Things.Patch {
+    [HarmonyPatch(typeof(RoofGrid), "GetCellExtraColor")]
+    public static class RoofGrid_GetCellExtraColor {
+        public static bool Prefix(ref RoofGrid __instance, ref Color __result, int index) {
+            if (MirrorVanilla.roofGrid(__instance)[index] != Defs.Loader.roof_magnetic_field) return true;
+            __result = Color.blue;
+            return false;
+        }
+
+    // PORT 1.6: el juego revienta con NullReferenceException DENTRO de
+    // RimWorld.CompTransporter::CompGetGizmosExtra al seleccionar un pod del mod, siempre en el
+    // mismo punto. Ese metodo es vanilla, asi que el nulo depende del estado del edificio. Este
+    // prefijo escribe ese estado ANTES de que reviente, para saber que falta exactamente.
+    // PORT 1.6: el juego revienta con NullReferenceException DENTRO de
+    // RimWorld.CompTransporter::CompGetGizmosExtra al seleccionar un pod del mod, siempre en el
+    // mismo punto (IL 0x00569). Ese metodo es vanilla, asi que el nulo depende del estado del
+    // edificio. Esta sonda lo escribe ANTES de que reviente. Escribe una sola vez por sesion.
+    // PORT 1.6: ARREGLO del error rojo al seleccionar un pod del mod.
+    //
+    // El diagnostico midio el estado del pod y dio todo correcto salvo una cosa:
+    //   grupo=NULO   (MirrorVanilla.TransportersInGroup devolvia nulo)
+    // y esa lista es exactamente lo que RimWorld.CompTransporter::CompGetGizmosExtra
+    // recorre para dibujar los botones del pod. Vanilla la usa sin comprobar nada, asi que
+    // lanzaba NullReferenceException SIEMPRE en el mismo punto (IL 0x00569).
+    //
+    // No falta ningun componente: la propiedad del juego devuelve nulo para este edificio y
+    // nadie lo comprueba. Este posfijo garantiza que nunca sea nulo: una lista vacia se recorre
+    // sin problema y el pod simplemente no muestra botones de grupo, que es lo correcto cuando
+    // no tiene grupo.
+    [HarmonyPatch(typeof(RimWorld.CompLaunchable), "TransportersInGroup", MethodType.Getter)]
+    class CompLaunchable_TransportersInGroup {
+        public static void Postfix(ref List<RimWorld.CompTransporter> __result) {
+            if (__result == null) __result = new List<RimWorld.CompTransporter>();
+        }
+    }
+
+    // PORT 1.6: el NullReferenceException de CompGetGizmosExtra se produce DENTRO de MoveNext, la
+    // maquina de estados que genera el compilador para ese iterador perezoso. Parchear el metodo
+    // CompGetGizmosExtra no sirve: Harmony parchea el que FABRICA el iterador, que termina antes de
+    // ejecutar su cuerpo (por eso el finalizador anterior nunca se ejecuto).
+    // La pila del juego nombra la clase exacta: RimWorld.CompTransporter+<CompGetGizmosExtra>d__57.
+    // Este finalizador atrapa la excepcion y vuelca los campos que capturo el iterador, que es
+    // donde tiene que estar el nulo. Prepare() lo autodesactiva si el nombre cambia de version.
+    [HarmonyPatch]
+    class CompTransporter_MoveNext_Diagnostico {
+        private static bool __ya_escrito = false;
+
+        public static System.Reflection.MethodBase TargetMethod() {
+            System.Type t = HarmonyLib.AccessTools.TypeByName("RimWorld.CompTransporter+<CompGetGizmosExtra>d__57");
+            if (t == null) return null;
+            return HarmonyLib.AccessTools.Method(t, "MoveNext");
+        }
+
+        public static bool Prepare() { return TargetMethod() != null; }
+
+        public static System.Exception Finalizer(System.Exception __exception, object __instance) {
+            if (__exception == null || __ya_escrito) return __exception;
+            __ya_escrito = true;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("[RimNauts2 PORT 1.6] ERROR DEL POD: ");
+            sb.Append(__exception.ToString());
+            sb.Append(" || CAMPOS DEL ITERADOR:");
+            foreach (System.Reflection.FieldInfo f in __instance.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)) {
+                object v = null;
+                try { v = f.GetValue(__instance); } catch (System.Exception) { v = "?"; }
+                sb.Append(" | ");
+                sb.Append(f.Name);
+                sb.Append("=");
+                sb.Append(v == null ? "NULO" : v.ToString());
+            }
+            Verse.Log.Error(sb.ToString());
+            return __exception;
+        }
+    }
+
+    [HarmonyPatch(typeof(RimWorld.PlaceWorker_NotUnderRoof), "AllowsPlacing")]
+    class PlaceWorker_NotUnderRoof_AllowsPlacing {
+        public static bool Prefix(ref AcceptanceReport __result, BuildableDef checkingDef, IntVec3 loc, Rot4 rot, Map map, Thing thingToIgnore, Thing thing) {
+            if (map.roofGrid.RoofAt(loc) != Defs.Loader.roof_magnetic_field) return true;
+            __result = (AcceptanceReport) true;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(RimWorld.CompLaunchable), "AnyInGroupIsUnderRoof", MethodType.Getter)]
+    class CompLaunchable_AnyInGroupIsUnderRoof {
+        public static void Postfix(ref RimWorld.CompLaunchable __instance, ref bool __result) {
+            if (!__result) return;
+            // PORT 1.6: este postfijo no comprobaba NADA. Si la lista venia nula (que es lo que
+            // pasaba), el juego lanzaba NullReferenceException al dibujar los botones del pod, cada
+            // vez que se seleccionaba. Ahora se comprueba cada paso.
+            if (__instance == null || __instance.parent == null || __instance.parent.Map == null) return;
+            List<RimWorld.CompTransporter> transportersInGroup = MirrorVanilla.TransportersInGroup(__instance);
+            if (transportersInGroup == null) return;
+            for (int index = 0; index < transportersInGroup.Count; ++index) {
+                RimWorld.CompTransporter objetivo = transportersInGroup[index];
+                if (objetivo == null || objetivo.parent == null || !objetivo.parent.Spawned) continue;
+                if (objetivo.parent.Position.Roofed(__instance.parent.Map) && objetivo.parent.Position.GetRoof(__instance.parent.Map) != Defs.Loader.roof_magnetic_field) {
+                    __result = true;
+                    return;
+                }
+            }
+            __result = false;
+            return;
+        }
+    }
+
+    [HarmonyPatch(typeof(RoofCollapserImmediate), "DropRoofInCellPhaseOne")]
+    class RoofCollapserImmediate_DropRoofInCellPhaseOne {
+        public static bool Prefix(IntVec3 c, Map map, List<Thing> outCrushedThings) {
+            if (map.roofGrid.RoofAt(c) != Defs.Loader.roof_magnetic_field) return true;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(RoofCollapserImmediate), "DropRoofInCellPhaseTwo")]
+    class RoofCollapserImmediate_DropRoofInCellPhaseTwo {
+        public static bool Prefix(IntVec3 c, Map map) {
+            if (map.roofGrid.RoofAt(c) != Defs.Loader.roof_magnetic_field) return true;
+            return false;
+        }
+    }
+}
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    <MapGeneratorDef Name="RimNauts2_Moon_MapGen" Abstract="True">
+    <!-- PORT 1.6: los mapas de satelites, lunas y asteroides no tenian fondo del
+         espacio: se veian sobre un vacio negro. El juego YA sabe renderizar el mundo
+         detras de un mapa, que es lo que hace Odyssey en sus mapas del espacio con
+         estas mismas dos propiedades. Se ponen aqui, en el padre abstracto, para que
+         las hereden todos sus mapas. Sustituye al truco de mallas del framework, que
+         en 1.6 ya no tenia geometria que dibujar. -->
+    <renderWorld>true</renderWorld>
+    <disableMapClippers>true</disableMapClippers>
+		<genSteps>
+			<li>Fog</li>
+			<li>FindPlayerStartSpot</li>
+      		<li>ScenParts</li>
+		</genSteps>
+	</MapGeneratorDef>
+
+	<MapGeneratorDef ParentName="RimNauts2_Moon_MapGen">
+	    <defName>RimNauts2_MoonBarren_MapGen</defName>
+		<genSteps>
+			<li>RimNauts2_MoonBarren_GenStep_ElevationFertility</li>
+			<li>RimNauts2_MoonBarren_GenStep_RocksFromGrid</li>
+			<li>RimNauts2_MoonBarren_GenStep_Terrain</li>
+			<li>RockChunks</li>
+			<li>RimNauts2_MoonBarren_GenStep_Environment</li>
+		</genSteps>
+	</MapGeneratorDef>
+
+	<MapGeneratorDef ParentName="RimNauts2_Moon_MapGen">
+		<defName>RimNauts2_MoonStripped_MapGen</defName>
+		<genSteps>
+			<li>RimNauts2_MoonBarren_GenStep_ElevationFertility</li>
+			<li>RimNauts2_MoonBarren_GenStep_RocksFromGrid</li>
+			<li>RimNauts2_MoonBarren_GenStep_Terrain</li>
+			<li>RimNauts2_MoonStripped_GenStep_Stripes</li>
+			<li>RockChunks</li>
+			<li>RimNauts2_MoonBarren_GenStep_Environment</li>
+		</genSteps>
+	</MapGeneratorDef>
+
+	<MapGeneratorDef ParentName="RimNauts2_Moon_MapGen">
+		<defName>RimNauts2_MoonWater_MapGen</defName>
+		<genSteps>
+			<li>RimNauts2_MoonWater_GenStep_Terrain</li>
+			<li>RimNauts2_MoonWater_GenStep_Environment</li>
+		</genSteps>
+	</MapGeneratorDef>
+</Defs>
