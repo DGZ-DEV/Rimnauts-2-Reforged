@@ -39,23 +39,41 @@ namespace RimNauts2.Things.Patch {
         }
     }
 
-    // PORT 1.6: el NullReferenceException de CompTransporter::CompGetGizmosExtra sigue saliendo
-    // aunque la lista del grupo ya no puede ser nula, asi que el nulo es otra cosa. Cinco
-    // hipotesis deducidas han fallado; esta vez el error lo escribe el propio juego.
-    //
-    // El metodo que falla es un iterador compilado, y por eso el registro del juego pierde
-    // sus tramas internas (van inline). Un finalizador SI recibe el objeto de la excepcion,
-    // cuyo ToString() lleva la trama mas interna: la que nombra al culpable.
-    // Devuelve la excepcion para no cambiar el comportamiento del juego.
-    [HarmonyPatch(typeof(RimWorld.CompTransporter), "CompGetGizmosExtra")]
-    class CompTransporter_CompGetGizmosExtra_Diagnostico {
+    // PORT 1.6: el NullReferenceException de CompGetGizmosExtra se produce DENTRO de MoveNext, la
+    // maquina de estados que genera el compilador para ese iterador perezoso. Parchear el metodo
+    // CompGetGizmosExtra no sirve: Harmony parchea el que FABRICA el iterador, que termina antes de
+    // ejecutar su cuerpo (por eso el finalizador anterior nunca se ejecuto).
+    // La pila del juego nombra la clase exacta: RimWorld.CompTransporter+<CompGetGizmosExtra>d__57.
+    // Este finalizador atrapa la excepcion y vuelca los campos que capturo el iterador, que es
+    // donde tiene que estar el nulo. Prepare() lo autodesactiva si el nombre cambia de version.
+    [HarmonyPatch]
+    class CompTransporter_MoveNext_Diagnostico {
         private static bool __ya_escrito = false;
 
-        public static System.Exception Finalizer(System.Exception __exception) {
-            if (__exception != null && !__ya_escrito) {
-                __ya_escrito = true;
-                Verse.Log.Error("[RimNauts2 PORT 1.6] ERROR DEL POD, completo: " + __exception.ToString());
+        public static System.Reflection.MethodBase TargetMethod() {
+            System.Type t = HarmonyLib.AccessTools.TypeByName("RimWorld.CompTransporter+<CompGetGizmosExtra>d__57");
+            if (t == null) return null;
+            return HarmonyLib.AccessTools.Method(t, "MoveNext");
+        }
+
+        public static bool Prepare() { return TargetMethod() != null; }
+
+        public static System.Exception Finalizer(System.Exception __exception, object __instance) {
+            if (__exception == null || __ya_escrito) return __exception;
+            __ya_escrito = true;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append("[RimNauts2 PORT 1.6] ERROR DEL POD: ");
+            sb.Append(__exception.ToString());
+            sb.Append(" || CAMPOS DEL ITERADOR:");
+            foreach (System.Reflection.FieldInfo f in __instance.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)) {
+                object v = null;
+                try { v = f.GetValue(__instance); } catch (System.Exception) { v = "?"; }
+                sb.Append(" | ");
+                sb.Append(f.Name);
+                sb.Append("=");
+                sb.Append(v == null ? "NULO" : v.ToString());
             }
+            Verse.Log.Error(sb.ToString());
             return __exception;
         }
     }
